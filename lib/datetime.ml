@@ -19,6 +19,16 @@ type time = {
 
 type datetime = date * time
 
+let current_date () =
+  let tm = Unix.localtime (Unix.time ()) in
+  Printf.sprintf "%02d-%02d-%d"
+  tm.tm_mday tm.tm_mon (1900+tm.tm_year)
+
+let current_time () =
+  let tm = Unix.localtime (Unix.time ()) in
+  Printf.sprintf "%02d:%02d:%02d"
+  tm.tm_hour tm.tm_min tm.tm_sec
+
 (* ----------------------------
    Date
    ----------------------------
@@ -46,10 +56,10 @@ let string_of_date : date -> string = function
     [dd;mm;yyyy]
     |> List.map string_of_int
     |> List.map (Tools.pad 2 '0')
-    |> Tools.insert_string "/"
+    |> Tools.insert_string "-"
 
 let date_of_string (s : string) : date =
-  match String.split_on_char '/' s |> List.map int_of_string with
+  match String.split_on_char '-' s |> List.map int_of_string with
   | [dd; mm; yyyy] -> {dd=dd; mm=mm; yyyy=yyyy}
   | _         -> failwith "date_of_string: not a well-formed date."
 

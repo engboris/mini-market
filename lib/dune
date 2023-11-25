@@ -1,2 +1,6 @@
 (library
- (name minimarket))
+ (name minimarket)
+ (libraries unix yojson))
+(env
+  (dev
+    (flags (:standard -warn-error -A))))

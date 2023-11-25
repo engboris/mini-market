@@ -2,3 +2,6 @@
  (public_name minimarket)
  (name main)
  (libraries minimarket))
+(env
+  (dev
+    (flags (:standard -warn-error -A))))

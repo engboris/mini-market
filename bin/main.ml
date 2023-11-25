@@ -1,1 +1,3 @@
-let () = print_endline "Hello, World!"
+let _ =
+  print_string "Starting session...\n";
+  Minimarket.Market.start_session ()
