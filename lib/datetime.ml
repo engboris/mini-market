@@ -35,7 +35,7 @@ let current_time () =
  \date *)
 
 let rec update_date : date -> date = function
-  | {dd;mm;yyyy} as d ->
+  | {dd=dd;mm=mm;yyyy=yyyy} as d ->
       if (dd>31 && mm>=1 && mm<=7 && mm mod 2 = 1) ||
          (dd>31 && (mm=8||mm=10||mm=12)) ||
          (dd>30 && (mm=4||mm=6||mm=9||mm=11)) ||
@@ -48,11 +48,11 @@ let rec update_date : date -> date = function
         d
 
 let next_day : date -> date = function
-  | {dd;mm;yyyy} ->
+  | {dd=dd;mm=mm;yyyy=yyyy} ->
     update_date {dd=dd+1;mm=mm;yyyy=yyyy}
 
 let string_of_date : date -> string = function
-  | {dd;mm;yyyy} ->
+  | {dd=dd;mm=mm;yyyy=yyyy} ->
     [dd;mm;yyyy]
     |> List.map string_of_int
     |> List.map (Tools.pad 2 '0')
@@ -69,17 +69,17 @@ let date_of_string (s : string) : date =
  \time *)
 
 let rec update_time : time -> time = function
-  | {h;m;s} as t ->
+  | {h=h;m=m;s=s} as t ->
     if s>59 then update_time {h=h;m=m+1;s=0}
     else if m>59 then update_time {h=h+1;m=0;s=0}
     else if h>23 then {h=0;m=0;s=0}
       else t
 
 let tick : time -> time = function
-  | {h;m;s} -> update_time {h=h;m=m;s=s+1}
+  | {h=h;m=m;s=s} -> update_time {h=h;m=m;s=s+1}
 
 let string_of_time : time -> string = function
-  | {h;m;s} ->
+  | {h=h;m=m;s=s} ->
     [h;m;s]
     |> List.map string_of_int
     |> List.map (Tools.pad 2 '0')

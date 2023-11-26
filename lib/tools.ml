@@ -11,3 +11,8 @@ let insert_string s (l : string list) =
     if bs="" then x else x^s^bs
   ) l ""
 
+let get_file_content path =
+  let ic = open_in path in
+  let s = In_channel.input_all ic in
+  close_in ic;
+  s

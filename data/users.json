@@ -3,16 +3,18 @@
     "id": 0,
     "username": "boris",
     "email": "boris@email.fr",
+    "password": "",
     "balance": 100000,
-    "asset_value": 0,
+    "assets_value": 0,
     "assets": []
   },
   {
     "id": 1,
     "username": "macron",
     "email": "macron@email.fr",
+    "password": "",
     "balance": 100000,
-    "asset_value": 0,
+    "assets_value": 0,
     "assets": []
   }
 ]
