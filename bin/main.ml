@@ -1,7 +1,7 @@
 open Minimarket
 
 let is_good_user email pwd = function
-  | {Market.email=e;Market.password=p}
+  | {Market.email=e;Market.password=p; _}
     when e=email && p=pwd -> true
   | _ -> false 
 
@@ -14,12 +14,11 @@ let rec ask_login users =
   with _ -> (
     print_string "No user found.\n";
     ask_login users
-  );
-  print_string "Connected.\n"
+  )
 
 let () =
   print_string "Market open.\n";
   let users = Market.load_users () in
   let orderbook = Market.load_orderbook () in
   let user = ask_login users in
-  ()
+  print_string "Connected.\n"

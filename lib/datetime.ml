@@ -3,6 +3,7 @@
    ============================
  * \date
  * \time
+ * \datetime
  *)
 
 type date = {
@@ -89,3 +90,26 @@ let time_of_string (s : string) : time =
   match String.split_on_char ':' s |> List.map int_of_string with
   | [h; m; s] -> {h=h; m=m; s=s}
   | _         -> failwith "time_of_string: not a well-formed time."
+
+(* ----------------------------
+   Datetime 
+   ----------------------------
+ \datetime *)
+
+let json_of_datetime = function (d, t) ->
+  `Assoc [
+    ("dd", d.dd);
+    ("mm", d.mm);
+    ("yyyy", d.yyyy);
+    ("h", t.h);
+    ("m", t.m);
+    ("s", t.s)
+  ]
+
+let string_of_datetime = function (d, t) ->
+  (string_of_date d) ^ " " ^ (string_of_time t)
+
+let datetime_of_string (s : string) =
+  match String.split_on_char ' ' s with
+  | [sd; st] -> (date_of_string sd, time_of_string st)
+  | _ -> failwith "datetime_of_string: invalid datetime."

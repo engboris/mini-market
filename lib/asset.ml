@@ -1,19 +1,14 @@
 (* ============================
    Asset
    ============================
- * \json_of
- * \of_json
+ * \jsonof
+ * \ofjson
  *)
 
 type country = FR | US
 
 type asset_type =
   | Stock
-
-type asset_info = {
-  code  : string;
-  name  : string;
-}
 
 type company = {
   name : string;
@@ -28,23 +23,21 @@ type exchange = {
 }
 
 type asset =
-  | Stock of (asset_info * company * exchange) 
+  | Stock of {
+    code          : string;
+    name          : string;
+    company_code  : string;
+    exchange_code : string
+  }
 
 (* ----------------------------
    Conversion to JSON
    ----------------------------
- \json *)
+ \jsonof *)
 
 let json_of_country = function
   | FR -> `String "FR"
   | US -> `String "US"
-
-let json_of_assetinfo = function
-  | ({code=code;name=name} : asset_info) ->
-    `Assoc [
-      ("code", `String code);
-      ("name", `String name)
-    ]
 
 let json_of_company = function
   | {name=name;desc=desc;from=from} ->
@@ -63,32 +56,28 @@ let json_of_exchange = function
   ]
 
 let json_of_asset = function
-  | Stock (info, c, e) ->
+  | Stock {
+    code=code;
+    name=name;
+    company_code=c;
+    exchange_code=e} ->
     `Assoc [
     ("asset_type", `String "stock");
-    ("asset_info", json_of_assetinfo info);
-    ("company", json_of_company c);
-    ("exchange", json_of_exchange e)
+    ("code", `String code);
+    ("name", `String name);
+    ("company_code", `String c);
+    ("exchange_code", `String e)
   ]
 
 (* ----------------------------
    Conversion from JSON
    ----------------------------
- \fromjson *)
+ \jsonof *)
 
 let country_of_json = function
   | `String s when s="FR" -> FR
   | `String s when s="US" -> US
   | _ -> failwith "country_of_json: invalid country."
-
-let assetinfo_of_json = function
-  | `Assoc [
-    ("code", `String code);
-    ("name", `String name)
-    ] ->
-    {code=code; name=name}
-  | _ -> failwith "assetinfo_of_json: invalid asset_info."
-
 
 let company_of_json = function
   | `Assoc [
@@ -111,14 +100,16 @@ let exchange_of_json = function
 let asset_of_json = function
   | `Assoc [
     ("asset_type", `String s);
-    ("asset_info", i);
-    ("company", c);
-    ("exchange", e)
+    ("code", `String code);
+    ("name", `String name);
+    ("company_code", `String c);
+    ("exchange_code", `String e)
     ]
     when s="stock" ->
-    Stock (
-      assetinfo_of_json i,
-      company_of_json c,
-      exchange_of_json e
-    )
+    Stock {
+      code=code;
+      name=name;
+      company_code=c;
+      exchange_code=e
+    }
   | _ -> failwith "asset_of_json: invalid asset."

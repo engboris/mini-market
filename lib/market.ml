@@ -1,16 +1,13 @@
+(* ============================
+   Market
+   ============================
+ * \jsonof
+ * \ofjson
+ * \dataload
+ *)
+
 let users_path = "data/users.json"
 let orderbooks_path = "data/orderbooks/"
-
-type order_type =
-  | Market
-  | Limit of int
-
-type order = {
-  content : Asset.asset;
-  ordtype : order_type;
-  size    : int;
-  t       : Datetime.datetime 
-}
 
 type user = {
   id           : int;
@@ -21,6 +18,23 @@ type user = {
   assets_value : int;
   assets       : Asset.asset list
 }
+
+type order_type =
+  | Market
+  | Limit of int
+
+type order = {
+  asset_code : string;
+  ordtype    : order_type;
+  size       : int;
+  t          : Datetime.datetime;
+  user_id    : int 
+}
+
+(* ----------------------------
+   Conversion from JSON
+   ----------------------------
+ \jsonof *)
 
 let json_of_user : user -> Yojson.Basic.t = function
   | {id=id;
@@ -39,6 +53,25 @@ let json_of_user : user -> Yojson.Basic.t = function
       ("assets_value", `Int assets_value);
       ("assets", `List (List.map Asset.json_of_asset assets))
     ]
+
+let json_of_ordertype : order_type -> Yojson.Basic.t = function
+  | Market -> `Assoc [("type", `String "market")]
+  | Limit n -> `Assoc [("type", `String "limit"); ("limit", `Int n)]
+
+let json_of_order : order -> Yojson.Basic.t = function
+  | {asset_code=code; ordtype=ordtype; size=size; t=t; user_id=id} ->
+    `Assoc [
+      ("asset_code", `String code);
+      ("ordtype", json_of_ordertype ordtype);
+      ("size", `Int size);
+      ("t", `String (Datetime.string_of_datetime t));
+      ("user_id", `Int id)
+    ]
+
+(* ----------------------------
+   Conversion to JSON
+   ----------------------------
+ \ofjson *)
 
 let user_of_json : Yojson.Basic.t -> user = function
   | `Assoc [
@@ -60,6 +93,11 @@ let user_of_json : Yojson.Basic.t -> user = function
         assets=(List.map Asset.asset_of_json assets)
       }
   | _ -> failwith "user_of_json: not a valid user."
+
+(* ----------------------------
+   Data loading
+   ----------------------------
+ \dataload *)
 
 let initialise_json path =
   let oc = open_out_gen [Open_wronly; Open_creat] 777 path in
