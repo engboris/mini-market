@@ -1,3 +1,5 @@
+open Base
+
 (* ============================
    Datetime
    ============================
@@ -36,31 +38,31 @@ let current_time () =
  \date *)
 
 let rec update_date : date -> date = function
-  | {dd=dd;mm=mm;yyyy=yyyy} as d ->
-      if (dd>31 && mm>=1 && mm<=7 && mm mod 2 = 1) ||
+  | {dd;mm;yyyy} as d ->
+      if (dd>31 && mm>=1 && mm<=7 && mm % 2 = 1) ||
          (dd>31 && (mm=8||mm=10||mm=12)) ||
          (dd>30 && (mm=4||mm=6||mm=9||mm=11)) ||
-         (dd>28 && mm=2 && yyyy mod 4 != 0) ||
-         (dd>29 && mm=2 && yyyy mod 4 = 0) then
-        update_date {dd=1;mm=mm+1;yyyy}
+         (dd>28 && mm=2 && not (yyyy % 4 = 0)) ||
+         (dd>29 && mm=2 && yyyy % 4 = 0) then
+        update_date {dd=1;mm=mm+1;yyyy=yyyy}
       else if mm>12 then
         update_date {dd=1;mm=1;yyyy=yyyy+1}
       else
         d
 
-let next_day : date -> date = function
-  | {dd=dd;mm=mm;yyyy=yyyy} ->
-    update_date {dd=dd+1;mm=mm;yyyy=yyyy}
+let next_day (d:date) : date =
+  update_date {d with dd=d.dd+1}
 
 let string_of_date : date -> string = function
-  | {dd=dd;mm=mm;yyyy=yyyy} ->
+  | {dd;mm;yyyy} ->
     [dd;mm;yyyy]
-    |> List.map string_of_int
-    |> List.map (Tools.pad 2 '0')
-    |> Tools.insert_string "-"
+    |> List.map ~f:Int.to_string
+    |> List.map ~f:(String.pad_left ~char:'0' ~len:2)
+    |> String.concat ~sep:"-"
 
 let date_of_string (s : string) : date =
-  match String.split_on_char '-' s |> List.map int_of_string with
+  match String.split_on_chars ~on:['-'] s
+      |>List.map ~f:Int.of_string with
   | [dd; mm; yyyy] -> {dd=dd; mm=mm; yyyy=yyyy}
   | _         -> failwith "date_of_string: not a well-formed date."
 
@@ -70,24 +72,25 @@ let date_of_string (s : string) : date =
  \time *)
 
 let rec update_time : time -> time = function
-  | {h=h;m=m;s=s} as t ->
+  | {h;m;s} as t ->
     if s>59 then update_time {h=h;m=m+1;s=0}
     else if m>59 then update_time {h=h+1;m=0;s=0}
     else if h>23 then {h=0;m=0;s=0}
       else t
 
-let tick : time -> time = function
-  | {h=h;m=m;s=s} -> update_time {h=h;m=m;s=s+1}
+let tick (t:time) : time =
+  update_time {t with s=t.s+1}
 
 let string_of_time : time -> string = function
-  | {h=h;m=m;s=s} ->
+  | {h;m;s} ->
     [h;m;s]
-    |> List.map string_of_int
-    |> List.map (Tools.pad 2 '0')
-    |> Tools.insert_string ":" 
+    |> List.map ~f:Int.to_string
+    |> List.map ~f:(String.pad_left ~char:'0' ~len:2)
+    |> String.concat ~sep:":" 
 
 let time_of_string (s : string) : time =
-  match String.split_on_char ':' s |> List.map int_of_string with
+  match String.split_on_chars ~on:[':'] s
+      |>List.map ~f:Int.of_string with
   | [h; m; s] -> {h=h; m=m; s=s}
   | _         -> failwith "time_of_string: not a well-formed time."
 
@@ -110,6 +113,6 @@ let string_of_datetime = function (d, t) ->
   (string_of_date d) ^ " " ^ (string_of_time t)
 
 let datetime_of_string (s : string) =
-  match String.split_on_char ' ' s with
+  match String.split_on_chars ~on:[' '] s with
   | [sd; st] -> (date_of_string sd, time_of_string st)
   | _ -> failwith "datetime_of_string: invalid datetime."

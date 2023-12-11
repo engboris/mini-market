@@ -40,7 +40,7 @@ let json_of_country = function
   | US -> `String "US"
 
 let json_of_company = function
-  | {name=name;desc=desc;from=from} ->
+  | {name;desc;from} ->
     `Assoc [
     ("name", `String name);
     ("desc", `String desc);
@@ -48,7 +48,7 @@ let json_of_company = function
   ]
 
 let json_of_exchange = function
-  | {code=code;name=name;from=from} ->
+  | {code;name;from} ->
     `Assoc [
     ("code", `String code);
     ("name", `String name);
@@ -56,17 +56,13 @@ let json_of_exchange = function
   ]
 
 let json_of_asset = function
-  | Stock {
-    code=code;
-    name=name;
-    company_code=c;
-    exchange_code=e} ->
+  | Stock {code;name;company_code;exchange_code} ->
     `Assoc [
     ("asset_type", `String "stock");
     ("code", `String code);
     ("name", `String name);
-    ("company_code", `String c);
-    ("exchange_code", `String e)
+    ("company_code", `String company_code);
+    ("exchange_code", `String exchange_code)
   ]
 
 (* ----------------------------
