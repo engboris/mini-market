@@ -32,6 +32,10 @@ let current_time () =
   Printf.sprintf "%02d:%02d:%02d"
   tm.tm_hour tm.tm_min tm.tm_sec
 
+let current_datetime () =
+  current_date () ^ " " ^
+  current_time ()
+
 (* ----------------------------
    Date
    ----------------------------
@@ -100,13 +104,13 @@ let time_of_string (s : string) : time =
  \datetime *)
 
 let json_of_datetime = function (d, t) ->
-  `Assoc [
-    ("dd", d.dd);
-    ("mm", d.mm);
-    ("yyyy", d.yyyy);
-    ("h", t.h);
-    ("m", t.m);
-    ("s", t.s)
+  `Assoc
+  [ ("dd", d.dd)
+  ; ("mm", d.mm)
+  ; ("yyyy", d.yyyy)
+  ; ("h", t.h)
+  ; ("m", t.m)
+  ; ("s", t.s)
   ]
 
 let string_of_datetime = function (d, t) ->

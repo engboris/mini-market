@@ -41,29 +41,29 @@ let json_of_country = function
 
 let json_of_company = function
   | {name;desc;from} ->
-    `Assoc [
-    ("name", `String name);
-    ("desc", `String desc);
-    ("from", json_of_country from)
-  ]
+    `Assoc
+    [ ("name", `String name)
+    ; ("desc", `String desc)
+    ; ("from", json_of_country from)
+    ]
 
 let json_of_exchange = function
   | {code;name;from} ->
-    `Assoc [
-    ("code", `String code);
-    ("name", `String name);
-    ("from", json_of_country from)
-  ]
+    `Assoc
+    [ ("code", `String code)
+    ; ("name", `String name)
+    ; ("from", json_of_country from)
+    ]
 
 let json_of_asset = function
   | Stock {code;name;company_code;exchange_code} ->
-    `Assoc [
-    ("asset_type", `String "stock");
-    ("code", `String code);
-    ("name", `String name);
-    ("company_code", `String company_code);
-    ("exchange_code", `String exchange_code)
-  ]
+    `Assoc
+    [ ("asset_type", `String "stock")
+    ; ("code", `String code)
+    ; ("name", `String name)
+    ; ("company_code", `String company_code)
+    ; ("exchange_code", `String exchange_code)
+    ]
 
 (* ----------------------------
    Conversion from JSON
@@ -76,36 +76,36 @@ let country_of_json = function
   | _ -> failwith "country_of_json: invalid country."
 
 let company_of_json = function
-  | `Assoc [
-    ("name", `String name);
-    ("desc", `String desc);
-    ("from", c)
+  | `Assoc
+    [ ("name", `String name)
+    ; ("desc", `String desc)
+    ; ("from", c)
     ] ->
     {name=name; desc=desc; from=country_of_json c}
   | _ -> failwith "company_of_json: invalid company."
 
 let exchange_of_json = function
-  | `Assoc [
-    ("code", `String code);
-    ("name", `String name);
-    ("from", c)
+  | `Assoc
+    [ ("code", `String code)
+    ; ("name", `String name)
+    ; ("from", c)
     ] ->
     {code=code; name=name; from=country_of_json c}
   | _ -> failwith "exchange_of_json: invalid exchange."
 
 let asset_of_json = function
-  | `Assoc [
-    ("asset_type", `String s);
-    ("code", `String code);
-    ("name", `String name);
-    ("company_code", `String c);
-    ("exchange_code", `String e)
+  | `Assoc
+    [ ("asset_type", `String s)
+    ; ("code", `String code)
+    ; ("name", `String name)
+    ; ( "company_code", `String c)
+    ; ("exchange_code", `String e)
     ]
     when s="stock" ->
-    Stock {
-      code=code;
-      name=name;
-      company_code=c;
-      exchange_code=e
+    Stock
+    { code=code
+    ; name=name
+    ; company_code=c
+    ; exchange_code=e
     }
   | _ -> failwith "asset_of_json: invalid asset."
