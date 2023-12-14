@@ -25,7 +25,7 @@ let rec prompt users (user : Market.user) ob =
   let input = read_line () in
   begin match String.split_on_char ' ' input with
   | ["buy"; "limit"; value; size; asset] ->
-      let dt = Datetime.current_datetime () in
+      let dt = Datetime.current () in
       let nvalue = int_of_string value in
       let nsize = int_of_string size in
       if user.balance >= nvalue*nsize then
@@ -33,7 +33,7 @@ let rec prompt users (user : Market.user) ob =
         { asset_code = asset
         ; ordtype = Market.Limit nvalue
         ; size = nsize
-        ; t = Datetime.datetime_of_string dt 
+        ; t = Datetime.of_string dt 
         ; user_id = user.id
         } in 
         let new_ob = o::ob in

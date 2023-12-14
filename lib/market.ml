@@ -1,13 +1,5 @@
 open Base
 
-(* ============================
-   Market
-   =========================
- * \jsonof
- * \ofjson
- * \dataload
- *)
-
 let users_path = "data/users.json"
 let orderbooks_path = "data/orderbooks/"
 
@@ -60,7 +52,7 @@ let json_of_order : order -> Yojson.Basic.t = function
     [ ("asset_code", `String asset_code)
     ; ("ordtype", json_of_ordertype ordtype)
     ; ("size", `Int size)
-    ; ("t", `String (Datetime.string_of_datetime t))
+    ; ("t", `String (Datetime.to_string t))
     ; ("user_id", `Int user_id)
     ]
 
@@ -106,7 +98,7 @@ let order_of_json : Yojson.Basic.t -> order = function
     { asset_code = asset_code
     ; ordtype = ordtype_of_json ordtype
     ; size = size
-    ; t = Datetime.datetime_of_string dt
+    ; t = Datetime.of_string dt
     ; user_id = user_id
     }
   | _ -> failwith "order_of_json: not a valid order."
@@ -130,7 +122,7 @@ let load_users () =
     | _ -> failwith "load_users: invalid list of users."
 
 let load_orderbook () =
-  let d = Datetime.current_date () in
+  let d = Datetime.Date.current () in
   let path = orderbooks_path^d^".json" in 
   (if not (Stdlib.Sys.file_exists path) then
     initialise_json path);
@@ -142,7 +134,7 @@ let load_orderbook () =
 
 let save_orderbook orderbook =
   let j = `List (List.map ~f:json_of_order orderbook) in
-  let d = Datetime.current_date () in
+  let d = Datetime.Date.current () in
   let path = orderbooks_path^d^".json" in
   let oc =
     Out_channel.open_gen [Open_wronly; Open_trunc] 777 path in
