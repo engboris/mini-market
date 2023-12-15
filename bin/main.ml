@@ -24,13 +24,13 @@ let rec prompt users (user : User.t) ob =
   print_string "> ";
   let input = read_line () in
   begin match String.split_on_char ' ' input with
-  | [side; "limit"; price; size; asset] ->
+  | ["buy"; "limit"; price; size; asset] ->
       let nprice = int_of_string price in
       let nsize = int_of_string size in
       if user.balance >= nprice*nsize then
         let o =
           Market.new_order
-            (Order.Side.from_string side)
+            Order.Buy
             (Order.Limit nprice)
             nsize
             asset
@@ -43,6 +43,7 @@ let rec prompt users (user : User.t) ob =
       else
         (print_string "Insufficient balance on your account.\n";
         prompt users user ob)
+  | ["sell"; "limit"; price; size; asset] -> failwith "TODO"
   | ["balance"] -> print_balance user; prompt users user ob
   | ["disconnect"] ->
     print_string "Disconnected.\n";
