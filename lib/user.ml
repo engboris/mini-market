@@ -1,6 +1,6 @@
 open Base
 
-type user = {
+type t = {
   id           : int;
   username     : string;
   email        : string;
@@ -10,7 +10,7 @@ type user = {
   assets       : Asset.asset list
 }
 
-let to_json : user -> Yojson.Basic.t = function
+let to_json : t -> Yojson.Basic.t = function
   | {id;username;email;password;balance;assets_value;assets} ->
     `Assoc
     [ ("id", `Int id)
@@ -22,7 +22,7 @@ let to_json : user -> Yojson.Basic.t = function
     ; ("assets", `List (List.map ~f:Asset.to_json assets))
     ]
 
-let from_json : Yojson.Basic.t -> user = function
+let from_json : Yojson.Basic.t -> t = function
   | `Assoc
     [ ("id", `Int id)
     ; ("username", `String username)
