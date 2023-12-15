@@ -1,10 +1,3 @@
-(* ============================
-   Asset
-   ============================
- * \jsonof
- * \ofjson
- *)
-
 type country = FR | US
 
 type asset_type =
@@ -30,32 +23,56 @@ type asset =
     exchange_code : string
   }
 
-(* ----------------------------
-   Conversion to JSON
-   ----------------------------
- \jsonof *)
+module Country = struct
+  let to_json = function
+    | FR -> `String "FR"
+    | US -> `String "US"
 
-let json_of_country = function
-  | FR -> `String "FR"
-  | US -> `String "US"
+  let from_json = function
+    | `String s when s="FR" -> FR
+    | `String s when s="US" -> US
+    | _ -> failwith "country_of_json: invalid country."
+end
 
-let json_of_company = function
-  | {name;desc;from} ->
-    `Assoc
-    [ ("name", `String name)
-    ; ("desc", `String desc)
-    ; ("from", json_of_country from)
-    ]
+module Company = struct
+  let to_json = function
+    | {name;desc;from} ->
+      `Assoc
+      [ ("name", `String name)
+      ; ("desc", `String desc)
+      ; ("from", Country.to_json from)
+      ]
 
-let json_of_exchange = function
-  | {code;name;from} ->
-    `Assoc
-    [ ("code", `String code)
-    ; ("name", `String name)
-    ; ("from", json_of_country from)
-    ]
+  let from_json = function
+    | `Assoc
+      [ ("name", `String name)
+      ; ("desc", `String desc)
+      ; ("from", c)
+      ] ->
+      {name=name; desc=desc; from=Country.from_json c}
+    | _ -> failwith "company_of_json: invalid company."
+end
 
-let json_of_asset = function
+module Exchange = struct
+  let to_json = function
+    | {code;name;from} ->
+      `Assoc
+      [ ("code", `String code)
+      ; ("name", `String name)
+      ; ("from", Country.to_json from)
+      ]
+
+  let from_json = function
+    | `Assoc
+      [ ("code", `String code)
+      ; ("name", `String name)
+      ; ("from", c)
+      ] ->
+      {code=code; name=name; from=Country.from_json c}
+    | _ -> failwith "exchange_of_json: invalid exchange."
+end
+
+let to_json = function
   | Stock {code;name;company_code;exchange_code} ->
     `Assoc
     [ ("asset_type", `String "stock")
@@ -65,35 +82,7 @@ let json_of_asset = function
     ; ("exchange_code", `String exchange_code)
     ]
 
-(* ----------------------------
-   Conversion from JSON
-   ----------------------------
- \jsonof *)
-
-let country_of_json = function
-  | `String s when s="FR" -> FR
-  | `String s when s="US" -> US
-  | _ -> failwith "country_of_json: invalid country."
-
-let company_of_json = function
-  | `Assoc
-    [ ("name", `String name)
-    ; ("desc", `String desc)
-    ; ("from", c)
-    ] ->
-    {name=name; desc=desc; from=country_of_json c}
-  | _ -> failwith "company_of_json: invalid company."
-
-let exchange_of_json = function
-  | `Assoc
-    [ ("code", `String code)
-    ; ("name", `String name)
-    ; ("from", c)
-    ] ->
-    {code=code; name=name; from=country_of_json c}
-  | _ -> failwith "exchange_of_json: invalid exchange."
-
-let asset_of_json = function
+let from_json = function
   | `Assoc
     [ ("asset_type", `String s)
     ; ("code", `String code)

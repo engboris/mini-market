@@ -39,7 +39,7 @@ let json_of_user : user -> Yojson.Basic.t = function
     ; ("password", `String password)
     ; ("balance", `Int balance)
     ; ("assets_value", `Int assets_value)
-    ; ("assets", `List (List.map ~f:Asset.json_of_asset assets))
+    ; ("assets", `List (List.map ~f:Asset.to_json assets))
     ]
 
 let json_of_ordertype : order_type -> Yojson.Basic.t = function
@@ -83,7 +83,7 @@ let user_of_json : Yojson.Basic.t -> user = function
     ; password=password
     ; balance=balance
     ; assets_value=assets_value
-    ; assets=(List.map ~f:Asset.asset_of_json assets)
+    ; assets=(List.map ~f:Asset.from_json assets)
     }
   | _ -> failwith "user_of_json: not a valid user."
 
